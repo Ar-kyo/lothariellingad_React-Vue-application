@@ -73,9 +73,26 @@ function App() {
     setLoading(true)
     setError('')
     try {
-      const response = await api.post(`/auth/${mode}`, credentials)
-      const tokens = response.data?.data
-      if (!tokens?.access_token) throw new Error('The API did not return an access token.')
+      let response = await api.post(`/auth/${mode}`, credentials)
+      let tokens = response.data?.data?.access_token
+        ? response.data.data
+        : response.data?.access_token
+          ? response.data
+          : null
+
+      if (!tokens && mode === 'register') {
+        response = await api.post('/auth/login', {
+          username: credentials.username,
+          password: credentials.password,
+        })
+        tokens = response.data?.data?.access_token
+          ? response.data.data
+          : response.data?.access_token
+            ? response.data
+            : null
+      }
+
+      if (!tokens) throw new Error('Account request succeeded, but sign-in did not return an access token. Try signing in with this account.')
       const nextSession = {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
