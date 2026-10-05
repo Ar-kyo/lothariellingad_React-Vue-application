@@ -72,8 +72,10 @@ function App() {
     }
     setLoading(true)
     setError('')
+    let registrationAccepted = false
     try {
       let response = await api.post(`/auth/${mode}`, credentials)
+      registrationAccepted = mode === 'register'
       let tokens = response.data?.data?.access_token
         ? response.data.data
         : response.data?.access_token
@@ -101,7 +103,14 @@ function App() {
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(nextSession))
       setSession(nextSession)
     } catch (requestError) {
-      setError(requestError.response?.data?.error || requestError.response?.data?.message || requestError.message || (mode === 'register' ? 'Account creation failed.' : 'Login failed.'))
+      const apiError = requestError.response?.data?.error || requestError.response?.data?.message
+      if (registrationAccepted) {
+        setError('The account request was accepted, but automatic sign-in failed. Try Sign in with this username and password. If that says no account was found, the API did not save the account.')
+      } else if (mode === 'login' && apiError === 'API login is not configured.') {
+        setError('No account was found for this username, and no fallback admin login is configured. Choose Create account first, or use an existing account.')
+      } else {
+        setError(apiError || requestError.message || (mode === 'register' ? 'Account creation failed.' : 'Login failed.'))
+      }
     } finally {
       setLoading(false)
     }
