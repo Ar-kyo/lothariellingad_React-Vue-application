@@ -3,7 +3,7 @@ import axios from 'axios'
 import { ArrowDown, ArrowUp, Boxes, Check, ChevronDown, CircleHelp, LoaderCircle, LogOut, MoreHorizontal, PackagePlus, Pencil, Plus, Search, ShieldCheck, Trash2, X } from 'lucide-react'
 import './App.css'
 
-const API_URL = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:3000/api').replace(/\/$/, '')
+const API_URL = (import.meta.env.VITE_API_BASE_URL || 'https://lavalust-products-api-dt1s.onrender.com/api').replace(/\/$/, '')
 const SESSION_KEY = 'stockroom-session'
 const CURRENCY = import.meta.env.VITE_CURRENCY || 'PHP'
 
